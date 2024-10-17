@@ -1,0 +1,112 @@
+Code:
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+// Define the structure for a customer node
+struct Customer {
+    int id;                 // Unique identifier for the customer
+    char name[50];         // Customer's name
+    struct Customer* next;  // Pointer to the next customer
+};
+
+// Function prototypes
+void enqueue(struct Customer** front, struct Customer** rear, int id, const char* name);
+struct Customer* dequeue(struct Customer** front);
+void displayQueue(struct Customer* front);
+
+// Main function
+int main() {
+    struct Customer* front = NULL;
+    struct Customer* rear = NULL;
+    int choice, id;
+    char name[50];
+
+    while (1) {
+        printf("\nCustomer Service Queue Menu:\n");
+        printf("1. Add Customer\n");
+        printf("2. Serve Customer\n");
+        printf("3. Display Queue\n");
+        printf("4. Exit\n");
+
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                printf("Enter customer ID: ");
+                scanf("%d", &id);
+                printf("Enter customer name: ");
+                scanf("%s", name);
+                enqueue(&front, &rear, id, name);
+                break;
+            case 2:
+                {
+                    struct Customer* servedCustomer = dequeue(&front);
+                    if (servedCustomer != NULL) {
+                        printf("Served Customer ID: %d, Name: %s\n", servedCustomer->id, servedCustomer->name);
+                        free(servedCustomer); // Free memory after serving
+                    }
+                }
+                break;
+            case 3:
+                displayQueue(front);
+                break;
+            case 4:
+                printf("Exiting program...\n");
+                exit(0);
+            default:
+                printf("Invalid choice! Please enter a valid option.\n");
+        }
+    }
+
+    return 0;
+}
+
+// Function to add a new customer to the queue
+void enqueue(struct Customer** front, struct Customer** rear, int id, const char* name) {
+    struct Customer* newCustomer = (struct Customer*)malloc(sizeof(struct Customer));
+    newCustomer->id = id;
+    strcpy(newCustomer->name, name);
+    newCustomer->next = NULL;
+
+    if (*rear == NULL) { // If the queue is empty
+        *front = *rear = newCustomer; // Both front and rear point to new customer
+        return;
+    }
+
+    (*rear)->next = newCustomer; // Link new customer at the end
+    *rear = newCustomer;         // Update rear pointer
+}
+
+// Function to serve (remove) the next customer from the queue
+struct Customer* dequeue(struct Customer** front) {
+    if (*front == NULL) {
+        printf("No customers in queue!\n");
+        return NULL; // Indicate that there are no customers to serve
+    }
+
+    struct Customer* temp = *front; // Store the front customer
+    *front = (*front)->next;         // Move front pointer to next customer
+
+    if (*front == NULL) { // If the queue becomes empty after serving
+        return temp;      // Return served customer for freeing later
+    }
+
+    return temp;          // Return served customer for freeing later
+}
+
+// Function to display all customers in the queue
+void displayQueue(struct Customer* front) {
+    if (front == NULL) {
+        printf("Queue is empty.\n");
+        return;
+    }
+
+    printf("Customers in Queue:\n");
+    while (front != NULL) {
+        printf("ID: %d, Name: %s\n", front->id, front->name);
+        front = front->next;
+    }
+}
