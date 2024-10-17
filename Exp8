@@ -1,0 +1,191 @@
+Code:
+
+#include <stdio.h>
+#include <stdlib.h>
+
+// Define the structure for a node
+struct Node {
+    int data;
+    struct Node* next;
+    struct Node* prev;
+};
+
+// Function prototypes
+struct Node* addToEmpty(struct Node* last, int data);
+struct Node* addFront(struct Node* last, int data);
+struct Node* addEnd(struct Node* last, int data);
+struct Node* deleteNode(struct Node* last, int key);
+void display(struct Node* last);
+void displayReverse(struct Node* last);
+
+// Main function
+int main() {
+    struct Node* last = NULL; // Initialize the last node pointer
+    int choice, data;
+
+    while (1) {
+        printf("\nCircular Doubly Linked List Menu:\n");
+        printf("1. Add to Empty\n");
+        printf("2. Add at Front\n");
+        printf("3. Add at End\n");
+        printf("4. Delete Node\n");
+        printf("5. Display List\n");
+        printf("6. Display Reverse List\n");
+        printf("7. Exit\n");
+
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                printf("Enter data: ");
+                scanf("%d", &data);
+                last = addToEmpty(last, data);
+                break;
+            case 2:
+                printf("Enter data: ");
+                scanf("%d", &data);
+                last = addFront(last, data);
+                break;
+            case 3:
+                printf("Enter data: ");
+                scanf("%d", &data);
+                last = addEnd(last, data);
+                break;
+            case 4:
+                printf("Enter the value to delete: ");
+                scanf("%d", &data);
+                last = deleteNode(last, data);
+                break;
+            case 5:
+                display(last);
+                break;
+            case 6:
+                displayReverse(last);
+                break;
+            case 7:
+                printf("Exiting program...\n");
+                exit(0);
+            default:
+                printf("Invalid choice! Please enter a valid option.\n");
+        }
+    }
+
+    return 0;
+}
+
+// Function to add a new node to an empty circular doubly linked list
+struct Node* addToEmpty(struct Node* last, int data) {
+    if (last != NULL) return last; // Return if list is not empty
+
+    struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+    newNode->data = data;
+    newNode->next = newNode; // Point to itself
+    newNode->prev = newNode; // Point to itself
+    return newNode; // Return new node as last
+}
+
+// Function to add a node at the front of the circular doubly linked list
+struct Node* addFront(struct Node* last, int data) {
+    if (last == NULL) return addToEmpty(last, data);
+
+    struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+    newNode->data = data;
+
+    newNode->next = last->next; // New node points to first node
+    newNode->prev = last;       // New node's previous points to last
+
+    last->next->prev = newNode; // Old first node's previous points to new node
+    last->next = newNode;       // Last node points to new node
+
+    return last; // Return unchanged last pointer
+}
+
+// Function to add a node at the end of the circular doubly linked list
+struct Node* addEnd(struct Node* last, int data) {
+    if (last == NULL) return addToEmpty(last, data);
+
+    struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+    newNode->data = data;
+
+    newNode->next = last->next; // New node points to first node
+    newNode->prev = last;       // New node's previous points to last
+
+    last->next->prev = newNode; // First node's previous points to new node
+    last->next = newNode;       // Last node points to new node
+
+    return newNode; // Update last pointer to new node
+}
+
+// Function to delete a node by value from the circular doubly linked list
+struct Node* deleteNode(struct Node* last, int key) {
+    if (last == NULL) return NULL;
+
+    struct Node *temp = last->next; // Start from first node
+
+    // If head needs to be removed
+    if (temp->data == key) {
+        if (temp == last) { // Only one node in the list
+            free(temp);
+            return NULL; // List becomes empty
+        } else {
+            last->next = temp->next; // Bypass the head
+            temp->next->prev = last;   // Update previous of first element
+            free(temp);               // Free memory
+            return last;              // Return unchanged last pointer
+        }
+    }
+
+    while (temp != last && temp->data != key) { // Search for key
+        temp = temp->next;
+    }
+
+    if (temp == last) { // Key not found
+        printf("Key not found!\n");
+        return last;
+    }
+
+    temp->prev->next = temp->next;   // Bypass the node to be deleted
+    temp->next->prev = temp->prev;   // Update previous of next element
+
+    if (temp == last) { // If it was the last node
+        return temp->prev; // Update last pointer
+    }
+
+    free(temp);               // Free memory
+    return last;              // Return unchanged last pointer
+}
+
+// Function to display all nodes in the circular doubly linked list
+void display(struct Node* last) {
+    if (last == NULL) {
+        printf("The list is empty.\n");
+        return;
+    }
+
+    struct Node* temp = last->next; // Start from first node
+
+    do {
+        printf("%d <=> ", temp->data);
+        temp = temp->next;
+    } while (temp != last->next); // Stop when we reach back to head
+
+    printf("(back to %d)\n", last->next->data); // Indicate circular nature
+}
+
+// Function to display all nodes in reverse order in the circular doubly linked list
+void displayReverse(struct Node* last) {
+    if (last == NULL) {
+        printf("The list is empty.\n");
+        return;
+    }
+
+    struct Node* temp = last; // Start from the last node
+
+    do {
+        printf("%d <=> ", temp->data);
+        temp = temp->prev;
+    } while (temp != last); // Stop when we reach back to the same point
+
+   printf("(back to %d)\n",last ->data); 
+}
