@@ -1,0 +1,111 @@
+Code:
+
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAX_SIZE 5 // Define the maximum size of the circular queue
+
+int queue[MAX_SIZE];
+int front = -1; // Initial front index
+int rear = -1;  // Initial rear index
+
+// Function to check if the queue is full
+int is_full() {
+    return (rear + 1) % MAX_SIZE == front;
+}
+
+// Function to check if the queue is empty
+int is_empty() {
+    return front == -1;
+}
+
+// Function to enqueue an element into the circular queue
+void enqueue(int num) {
+    if (is_full()) {
+        printf("Queue Overflow!\n");
+        return;
+    }
+
+    if (is_empty()) {
+        front = 0; // Set front to 0 if the queue was empty
+    }
+    
+    rear = (rear + 1) % MAX_SIZE; // Circular increment
+    queue[rear] = num; // Add element to the rear
+    printf("Enqueued: %d\n", num);
+}
+
+// Function to dequeue an element from the circular queue
+int dequeue() {
+    if (is_empty()) {
+        printf("Queue Underflow!\n");
+        return -1; // Indicate failure by returning -1
+    }
+
+    int temp = queue[front]; // Store the front element
+    if (front == rear) { // If the queue becomes empty after this operation
+        front = -1;
+        rear = -1; // Reset both indices
+    } else {
+        front = (front + 1) % MAX_SIZE; // Circular increment
+    }
+    
+    return temp;
+}
+
+// Function to display all elements in the circular queue
+void display_queue() {
+    if (is_empty()) {
+        printf("Queue is empty.\n");
+        return;
+    }
+
+    printf("Queue elements are: ");
+    int i = front;
+    while (1) {
+        printf("%d ", queue[i]);
+        if (i == rear) break; // Stop when we reach the rear
+        i = (i + 1) % MAX_SIZE; // Circular increment
+    }
+    printf("\n");
+}
+
+// Main function with menu-driven interface
+int main() {
+    int choice, num;
+
+    while (1) {
+        printf("\nCircular Queue Operations Menu:\n");
+        printf("1. Enqueue\n");
+        printf("2. Dequeue\n");
+        printf("3. Display Queue\n");
+        printf("4. Exit\n");
+
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                printf("Enter an integer to enqueue: ");
+                scanf("%d", &num);
+                enqueue(num);
+                break;
+            case 2:
+                num = dequeue();
+                if (num != -1) {
+                    printf("Dequeued element: %d\n", num);
+                }
+                break;
+            case 3:
+                display_queue();
+                break;
+            case 4:
+                printf("Exiting program...\n");
+                exit(0); // Exit the program gracefully
+            default:
+                printf("Invalid choice! Please enter a valid option.\n");
+        }
+    }
+
+    return 0;
+}
