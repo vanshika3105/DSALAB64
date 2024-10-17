@@ -1,0 +1,63 @@
+Code:
+#include <stdio.h>
+#include <string.h>
+
+// Function for binary search in the dictionary
+int binarySearch(char *dictionary[], int size, char *word) {
+    int low = 0, high = size - 1;
+    
+    while (low <= high) {
+        int mid = (low + high) / 2;
+        int result = strcmp(dictionary[mid], word);
+        
+        // Check if the word is present at mid
+        if (result == 0)
+            return mid;  // Word found, return the index
+        
+        // If word is greater, ignore the left half
+        if (result < 0)
+            low = mid + 1;
+        
+        // If word is smaller, ignore the right half
+        else
+            high = mid - 1;
+    }
+    
+    return -1;  // Word not found
+}
+
+// Function to print the dictionary
+void printDictionary(char *dictionary[], int size) {
+    printf("Dictionary words:\n");
+    for (int i = 0; i < size; i++) {
+        printf("%s\n", dictionary[i]);
+    }
+}
+
+int main() {
+    // Example sorted dictionary
+    char *dictionary[] = {
+        "apple", "banana", "cherry", "date", "fig", "grape", "mango", "orange", "peach", "watermelon"
+    };
+    
+    // Size of the dictionary
+    int dictionary_size = sizeof(dictionary) / sizeof(dictionary[0]);
+
+    // Print the dictionary
+    printDictionary(dictionary, dictionary_size);
+    
+    // Input word to search
+    char word[20];
+    printf("\nEnter a word to search in the dictionary: ");
+    scanf("%s", word);
+
+    // Search for the word in the dictionary using binary search
+    int result = binarySearch(dictionary, dictionary_size, word);
+    
+    if (result != -1)
+        printf("\n'%s' is found in the dictionary at position %d.\n", word, result + 1);
+    else
+        printf("\n'%s' is not found in the dictionary.\n", word);
+
+    return 0;
+}
