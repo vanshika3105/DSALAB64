@@ -1,0 +1,120 @@
+CODE:
+#include <stdio.h>
+// Function prototypes
+void mergeSort(int arr[], int left, int right);
+void merge(int arr[], int left, int mid, int right);
+void quickSort(int arr[], int low, int high);
+int partition(int arr[], int low, int high);
+void swap(int* a, int* b);
+void displayArray(int arr[], int size);
+int main() {
+int choice, size, i;
+printf("Enter the size of the array: ");
+scanf("%d", &size);
+int arr[size];
+printf("Enter the elements of the array: \n");
+for(i = 0; i < size; i++) {
+scanf("%d", &arr[i]);
+}
+do {
+printf("\nMenu:\n");
+printf("1. Merge Sort\n");
+printf("2. Quick Sort\n");
+printf("3. Exit\n");
+printf("Enter your choice: ");
+scanf("%d", &choice);
+switch(choice) {
+case 1:
+mergeSort(arr, 0, size - 1);
+printf("Sorted array using Merge Sort: ");
+displayArray(arr, size);
+break;
+case 2:
+quickSort(arr, 0, size - 1);
+printf("Sorted array using Quick Sort: ");
+displayArray(arr, size);
+break;
+case 3:
+printf("Exiting program.\n");
+break;
+default:
+printf("Invalid choice! Please try again.\n");
+}
+} while(choice != 3);
+return 0;
+}
+// Merge Sort implementation
+void mergeSort(int arr[], int left, int right) {
+if (left < right) {
+int mid = left + (right - left) / 2;
+// Recursively sort the two halves
+mergeSort(arr, left, mid);
+mergeSort(arr, mid + 1, right);
+// Merge the sorted halves
+merge(arr, left, mid, right);
+}
+}
+void merge(int arr[], int left, int mid, int right) {
+int n1 = mid - left + 1;
+int n2 = right - mid;
+int leftArr[n1], rightArr[n2];
+// Copy data to temporary arrays
+for (int i = 0; i < n1; i++)
+leftArr[i] = arr[left + i];
+for (int i = 0; i < n2; i++)
+rightArr[i] = arr[mid + 1 + i];
+int i = 0, j = 0, k = left;
+// Merge the two arrays back into arr[]
+while (i < n1 && j < n2) {
+if (leftArr[i] <= rightArr[j]) {
+arr[k] = leftArr[i];
+i++;
+} else {
+arr[k] = rightArr[j];
+j++;
+}
+k++;
+}
+// Copy remaining elements of leftArr[], if any
+while (i < n1) {
+arr[k] = leftArr[i];
+i++;
+k++;
+}
+// Copy remaining elements of rightArr[], if any
+while (j < n2) {
+arr[k] = rightArr[j];
+j++;
+k++;
+}
+}
+// Quick Sort implementation
+void quickSort(int arr[], int low, int high) {
+if (low < high) {
+int pi = partition(arr, low, high);
+quickSort(arr, low, pi - 1);
+quickSort(arr, pi + 1, high);
+}
+}
+int partition(int arr[], int low, int high) {
+int pivot = arr[high];
+int i = (low - 1);
+for (int j = low; j <= high - 1; j++) {
+if (arr[j] < pivot) {
+i++;
+swap(&arr[i], &arr[j]);
+}
+}
+swap(&arr[i + 1], &arr[high]);
+return (i + 1);
+}
+void swap(int* a, int* b) {
+int temp = *a; *a = *b; *b = temp;
+}
+// Function to display the array
+void displayArray(int arr[], int size) {
+for (int i = 0; i < size; i++) {
+printf("%d ", arr[i]);
+}
+printf("\n");
+}
