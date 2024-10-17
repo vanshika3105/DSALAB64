@@ -1,0 +1,131 @@
+  Code:
+
+#include <stdio.h>
+#include <stdlib.h>
+
+// Define the structure for a node
+struct Node {
+    int data;
+    struct Node* next;
+};
+
+// Function prototypes
+void insertAtBeginning(struct Node** head, int newData);
+void insertAtEnd(struct Node** head, int newData);
+void deleteNode(struct Node** head, int key);
+void displayList(struct Node* node);
+
+// Main function with menu-driven interface
+int main() {
+    struct Node* head = NULL; // Initialize the head of the list
+    int choice, num;
+
+    while (1) {
+        printf("\nSingly Linked List Operations Menu:\n");
+        printf("1. Insert at Beginning\n");
+        printf("2. Insert at End\n");
+        printf("3. Delete Node\n");
+        printf("4. Display List\n");
+        printf("5. Exit\n");
+
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                printf("Enter an integer to insert at beginning: ");
+                scanf("%d", &num);
+                insertAtBeginning(&head, num);
+                break;
+            case 2:
+                printf("Enter an integer to insert at end: ");
+                scanf("%d", &num);
+                insertAtEnd(&head, num);
+                break;
+            case 3:
+                printf("Enter value of node to delete: ");
+                scanf("%d", &num);
+                deleteNode(&head, num);
+                break;
+            case 4:
+                displayList(head);
+                break;
+            case 5:
+                printf("Exiting program...\n");
+                exit(0); // Exit the program gracefully
+            default:
+                printf("Invalid choice! Please enter a valid option.\n");
+        }
+    }
+
+    return 0;
+}
+
+// Function to insert a new node at the beginning
+void insertAtBeginning(struct Node** head, int newData) {
+    struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+    newNode->data = newData; // Assign data
+    newNode->next = (*head); // Link new node to previous head
+    (*head) = newNode;       // Move head to point to the new node
+}
+
+// Function to insert a new node at the end
+void insertAtEnd(struct Node** head, int newData) {
+    struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+    struct Node* last = *head; // Used to traverse the list
+
+    newNode->data = newData; // Assign data
+    newNode->next = NULL; // New node will be the last node
+
+    if (*head == NULL) { // If the list is empty, make the new node as head
+        *head = newNode;
+        return;
+    }
+
+    while (last->next != NULL) { // Traverse to the last node
+        last = last->next;
+    }
+
+    last->next = newNode; // Change the next of last node
+}
+
+// Function to delete a node by key
+void deleteNode(struct Node** head, int key) {
+    struct Node* temp = *head;
+    struct Node* prev = NULL;
+
+    if (temp != NULL && temp->data == key) { // If head needs to be removed
+        *head = temp->next; // Change head
+        free(temp);         // Free old head
+        return;
+    }
+
+    while (temp != NULL && temp->data != key) { // Search for the key
+        prev = temp;
+        temp = temp->next;
+    }
+
+    if (temp == NULL) { // Key was not present in linked list
+        printf("Key not found.\n");
+        return;
+    }
+
+    prev->next = temp->next; // Unlink the node from linked list
+    free(temp);              // Free memory
+}
+
+// Function to display the linked list
+void displayList(struct Node* node) {
+    if (node == NULL) {
+        printf("List is empty.\n");
+        return;
+    }
+    
+    printf("Linked List: ");
+    while (node != NULL) {
+        printf("%d -> ", node->data);
+        node = node->next;
+    }
+    
+    printf("NULL\n");
+}
